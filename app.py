@@ -4,7 +4,7 @@ from flask_cors import CORS
 import yt-dlp
 
 app = Flask(__name__)
-CORS(app) # यह ब्लॉगर से आने वाली रिक्वेस्ट्स को अलाउ करेगा
+CORS(app)
 
 @app.route('/')
 def home():
@@ -12,6 +12,10 @@ def home():
 
 @app.route('/get-download-link', methods=['POST'])
 def get_download_link():
+    # चेक करें कि डेटा JSON फॉर्मेट में आया है या नहीं
+    if not request.is_json:
+        return jsonify({'error': 'डेटा JSON फॉर्मेट में होना चाहिए!'}), 400
+        
     data = request.get_json()
     video_url = data.get('url')
     
@@ -39,9 +43,9 @@ def get_download_link():
             })
             
     except Exception as e:
+        # यहाँ हमने स्टेटस कोड को सही करके 500 कर दिया है
         return jsonify({'error': f'लिंक प्रोसेस करने में दिक्कत आई: {str(e)}'}), 500
 
 if __name__ == '__main__':
-    # Render के लिए पोर्ट सेटिंग्स
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
