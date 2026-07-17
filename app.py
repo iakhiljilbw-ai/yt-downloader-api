@@ -1,7 +1,7 @@
 import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import yt-dlp
+import yt_dlp  # यहाँ अंडरस्कोर (_) कर दिया है
 
 app = Flask(__name__)
 CORS(app)
@@ -12,7 +12,6 @@ def home():
 
 @app.route('/get-download-link', methods=['POST'])
 def get_download_link():
-    # चेक करें कि डेटा JSON फॉर्मेट में आया है या नहीं
     if not request.is_json:
         return jsonify({'error': 'डेटा JSON फॉर्मेट में होना चाहिए!'}), 400
         
@@ -29,7 +28,8 @@ def get_download_link():
     }
 
     try:
-        with yt-dlp.YoutubeDL(ydl_opts) as ydl:
+        # यहाँ भी अंडरस्कोर (_) कर दिया है
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(video_url, download=False)
             download_url = info.get('url')
             title = info.get('title')
@@ -43,7 +43,6 @@ def get_download_link():
             })
             
     except Exception as e:
-        # यहाँ हमने स्टेटस कोड को सही करके 500 कर दिया है
         return jsonify({'error': f'लिंक प्रोसेस करने में दिक्कत आई: {str(e)}'}), 500
 
 if __name__ == '__main__':
