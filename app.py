@@ -1,14 +1,14 @@
 import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import yt_dlp  # यहाँ अंडरस्कोर (_) कर दिया है
+import yt_dlp
 
 app = Flask(__name__)
 CORS(app)
 
 @app.route('/')
 def home():
-    return "YouTube Downloader API is running successfully!"
+    return "YouTube Downloader API is running with Cookies!"
 
 @app.route('/get-download-link', methods=['POST'])
 def get_download_link():
@@ -21,14 +21,20 @@ def get_download_link():
     if not video_url:
         return jsonify({'error': 'कृपया एक वैध YouTube URL डालें!'}), 400
 
+    # कुकीज़ फ़ाइल का सही पाथ सेट करना
+    cookies_path = os.path.join(os.path.dirname(__file__), 'cookies.txt')
+
     ydl_opts = {
         'format': 'best', 
         'quiet': True,
         'no_warnings': True,
     }
 
+    # अगर कुकी फ़ाइल मौजूद है, तो उसे लागू करें
+    if os.path.exists(cookies_path):
+        ydl_opts['cookiefile'] = cookies_path
+
     try:
-        # यहाँ भी अंडरस्कोर (_) कर दिया है
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(video_url, download=False)
             download_url = info.get('url')
